@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه خودثبت‌نام دانشجو | تشخیص چهره بیومتریک</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #FAFAF7;
+      --bg-secondary: #F3F0E8;
+      --surface-white: #FFFFFF;
+      --surface-glass: rgba(255, 255, 255, 0.88);
+      --surface-glass-strong: rgba(255, 255, 255, 0.95);
+      --gold-primary: #C6A15B;
+      --gold-light: #E2CC98;
+      --gold-subtle: #F7F2E7;
+      --gold-dark: #9A7838;
+      --gold-deep: #7A5D26;
+      --text-primary: #252525;
+      --text-secondary: #686662;
+      --text-muted: #949087;
+      --border-subtle: #E9E4D9;
+      --border-gold: rgba(198, 161, 91, 0.45);
+      --status-success: #1B7A50;
+      --status-success-bg: #EDF9F3;
+      --status-success-border: #BCE6D1;
+      --status-error: #B8372B;
+      --status-error-bg: #FDF2F1;
+      --status-error-border: #F5C6C2;
+      --radius-sm: 0.625rem;
+      --radius-md: 0.875rem;
+      --radius-lg: 1.125rem;
+      --radius-xl: 1.5rem;
+      --shadow-card: 0 12px 36px -8px rgba(45, 38, 24, 0.08), 0 3px 10px -2px rgba(45, 38, 24, 0.04);
+      --shadow-gold: 0 8px 24px -6px rgba(198, 161, 91, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+      background-color: var(--bg-primary);
+      background-image:
+        radial-gradient(circle at 10% 10%, rgba(198, 161, 91, 0.10) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(226, 204, 152, 0.12) 0%, transparent 45%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem 1rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: auto;
+    }
+
+    .card {
+      background: var(--surface-glass-strong);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .card-header {
+      padding: 1.75rem 1.5rem 1.25rem;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 242, 231, 0.45) 100%);
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+    }
+
+    .emblem-wrapper {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 0.85rem;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EC 60%, #EFE5CE 100%);
+      border: 1px solid var(--border-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(198, 161, 91, 0.2);
+    }
+
+    .emblem-wrapper svg {
+      width: 32px;
+      height: 32px;
+      color: var(--gold-dark);
+    }
+
+    .card-header h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .card-header p {
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+    }
+
+    .card-body {
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 0.9rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .alert svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .alert-error {
+      background-color: var(--status-error-bg);
+      color: var(--status-error);
+      border: 1px solid var(--status-error-border);
+    }
+
+    .alert-success {
+      background-color: var(--status-success-bg);
+      color: var(--status-success);
+      border: 1px solid var(--status-success-border);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.45rem;
+    }
+
+    .form-label .req {
+      color: var(--status-error);
+      margin-right: 0.2rem;
+    }
+
+    .progress-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      background: var(--gold-subtle);
+      color: var(--gold-dark);
+      border: 1px solid var(--border-gold);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+    }
+
+    .progress-pill.complete {
+      background: var(--status-success-bg);
+      color: var(--status-success);
+      border-color: var(--status-success-border);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 0.9rem;
+      color: var(--text-muted);
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 48px;
+      background: var(--surface-white);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0 2.75rem 0 1rem;
+      font-size: 0.925rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 3px rgba(198, 161, 91, 0.18);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .form-input.code-input {
+      font-family: 'JetBrains Mono', 'Vazirmatn', monospace;
+      direction: ltr;
+      text-align: right;
+    }
+
+    /* 3-Image Slots Layout */
+    .slots-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .slot-card {
+      background: var(--surface-white);
+      border: 1.5px dashed var(--border-gold);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 0.4rem;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      min-height: 155px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .slot-card:hover, .slot-card:active {
+      background: var(--gold-subtle);
+      border-color: var(--gold-dark);
+      transform: translateY(-2px);
+    }
+
+    .slot-card.has-image {
+      border-style: solid;
+      border-color: var(--status-success-border);
+      background: #FFFFFF;
+      padding: 0.4rem;
+    }
+
+    .slot-card input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .slot-empty-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    .slot-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gold-subtle);
+      border: 1px solid var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-dark);
+      transition: transform 0.2s ease;
+    }
+
+    .slot-card:hover .slot-icon-box {
+      transform: scale(1.08);
+    }
+
+    .slot-num-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--gold-dark);
+    }
+
+    .slot-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+
+    .slot-hint {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    /* Filled Slot Preview */
+    .slot-filled-view {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .slot-preview-thumb {
+      width: 100%;
+      height: 85px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .slot-status-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.35rem;
+      padding: 0 0.15rem;
+    }
+
+    .slot-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--status-success);
+    }
+
+    .btn-slot-retake {
+      background: transparent;
+      border: none;
+      color: var(--gold-dark);
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.15rem 0.3rem;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+      z-index: 6;
+      position: relative;
+    }
+
+    .btn-slot-retake:hover {
+      background: var(--gold-subtle);
+    }
+
+    /* Batch Upload Button */
+    .batch-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.5rem;
+      background: var(--surface-white);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.75rem;
+      color: var(--gold-dark);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .batch-bar:hover {
+      background: var(--gold-subtle);
+      border-color: var(--border-gold);
+    }
+
+    .batch-bar input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    /* Guidelines */
+    .guidelines {
+      background: #FAF8F3;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      margin: 1.25rem 0;
+      font-size: 0.775rem;
+      color: var(--text-secondary);
+    }
+
+    .guidelines-title {
+      font-weight: 700;
+      color: var(--gold-dark);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .guidelines ul {
+      list-style: none;
+      padding-right: 0.25rem;
+    }
+
+    .guidelines li {
+      position: relative;
+      padding-right: 1.1rem;
+      margin-bottom: 0.25rem;
+      line-height: 1.45;
+    }
+
+    .guidelines li::before {
+      content: "•";
+      position: absolute;
+      right: 0;
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(135deg, #C6A15B 0%, #B18B43 100%);
+      color: #FFFFFF;
+      border: 1px solid #A8833D;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: var(--shadow-gold);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #BA944E 0%, #9A7838 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px -6px rgba(198, 161, 91, 0.45);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    /* Success Card State */
+    .success-panel {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 0.5rem;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .success-icon-wrapper {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.25rem;
+      border-radius: 50%;
+      background: var(--status-success-bg);
+      border: 2px solid var(--status-success-border);
+      color: var(--status-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(27, 122, 80, 0.15);
+    }
+
+    .success-icon-wrapper svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .success-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--status-success);
+      margin-bottom: 0.4rem;
+    }
+
+    .success-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--surface-white);
+      color: var(--gold-dark);
+      border: 1.5px solid var(--border-gold);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--gold-subtle);
+      border-color: var(--gold-primary);
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0.75rem 0.5rem;
+      }
+      .card-header {
+        padding: 1.5rem 1.25rem 1rem;
+      }
+      .card-body {
+        padding: 1.15rem;
+      }
+      .slots-container {
+        gap: 0.45rem;
+      }
+      .slot-card {
+        padding: 0.6rem 0.25rem;
+        min-height: 145px;
+      }
+      .slot-preview-thumb {
+        height: 75px;
+      }
+      .slot-title {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="emblem-wrapper" aria-hidden="true">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.5L24.5 7.75V16.5C24.5 21.4 19.95 24.85 14 26C8.05 24.85 3.5 21.4 3.5 16.5V7.75L14 2.5Z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 8.5C12.3431 8.5 11 9.84315 11 11.5C11 13.1569 12.3431 14.5 14 14.5C15.6569 14.5 17 13.1569 17 11.5C17 9.84315 15.6569 8.5 14 8.5Z" stroke="currentColor" stroke-width="1.75"/>
+            <path d="M8.5 20.5C9.5 18 11.5 17 14 17C16.5 17 18.5 18 19.5 20.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1>سامانه خودثبت‌نام دانشجو</h1>
+        <p>ثبت هوشمند مشخصات و بیومتریک ۳ تصویر چهره جهت حضور و غیاب</p>
+      </div>
+
+      <div class="card-body">
+        <!-- Error Alert -->
+        <div id="errorAlert" class="alert alert-error" style="display: {% if error %}flex{% else %}none{% endif %};">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="errorMessage">{% if error %}{{ error }}{% endif %}</span>
+        </div>
+
+        <!-- Success Panel -->
+        <div id="successPanel" class="success-panel" style="display: {% if success %}block{% else %}none{% endif %};">
+          <div class="success-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </div>
+          <h2 class="success-title">ثبت‌نام شما با موفقیت انجام شد!</h2>
+          <p class="success-desc">
+            اطلاعات و ویژگی‌های ۳ زاویه چهره شما در پایگاه بیومتریک سامانه ثبت گردید. از این پس تردد شما در ورودی کلاس‌ها به‌صورت بلادرنگ شناسایی و ثبت خواهد شد.
+          </p>
+          <button type="button" class="btn-secondary" onclick="resetFormForNewStudent()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" y1="8" x2="19" y2="14"></line>
+              <line x1="22" y1="11" x2="16" y2="11"></line>
+            </svg>
+            <span>ثبت‌نام دانشجوی جدید</span>
+          </button>
+        </div>
+
+        <!-- Form -->
+        <form id="registerForm" method="POST" action="/register" enctype="multipart/form-data" style="display: {% if success %}none{% else %}block{% endif %};">
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label" for="full_name">
+              <span>نام و نام خانوادگی <span class="req">*</span></span>
+            </label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                type="text"
+                id="full_name"
+                name="full_name"
+                class="form-input"
+                placeholder="مثال: علی رضایی"
+                required
+                autocomplete="name"
+                value="{% if full_name %}{{ full_name }}{% endif %}"
+              >
+            </div>
+          </div>
+
+          <!-- Student ID -->
+          <div class="form-group">
+            <label class="form-label" for="student_id">
+              <span>شماره دانشجویی <span class="req">*</span></span>
+            </label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <line x1="6" y1="8" x2="6" y2="8"></line>
+                <line x1="10" y1="8" x2="18" y2="8"></line>
+                <line x1="6" y1="12" x2="18" y2="12"></line>
+                <line x1="6" y1="16" x2="14" y2="16"></line>
+              </svg>
+              <input
+                type="text"
+                id="student_id"
+                name="student_id"
+                class="form-input code-input"
+                placeholder="مثال: 403834220"
+                required
+                inputmode="numeric"
+                autocomplete="off"
+                value="{% if student_id %}{{ student_id }}{% endif %}"
+              >
+            </div>
+          </div>
+
+          <!-- 3-Images Section -->
+          <div class="form-group">
+            <div class="form-label">
+              <span>تصاویر چهره (۳ زاویه الزامی) <span class="req">*</span></span>
+              <span id="progressPill" class="progress-pill">۰ از ۳ تصویر آماده</span>
+            </div>
+
+            <!-- Slots Grid -->
+            <div class="slots-container">
+              <!-- Slot 1: Frontal -->
+              <div class="slot-card" id="slotCard1">
+                <input type="file" id="imageInput1" name="image_1" accept="image/*" required>
+                <div class="slot-empty-view" id="emptyView1">
+                  <div class="slot-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span class="slot-num-badge">عکس ۱</span>
+                  <span class="slot-title">روبرو (مستقیم)</span>
+                  <span class="slot-hint">لمس برای سلفی</span>
+                </div>
+                <div class="slot-filled-view" id="filledView1">
+                  <img id="thumb1" class="slot-preview-thumb" src="" alt="عکس ۱">
+                  <div class="slot-status-bar">
+                    <span class="slot-check">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      ثبت شد
+                    </span>
+                    <button type="button" class="btn-slot-retake" onclick="triggerSlot(1)">تغییر</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slot 2: Slight Right -->
+              <div class="slot-card" id="slotCard2">
+                <input type="file" id="imageInput2" name="image_2" accept="image/*" required>
+                <div class="slot-empty-view" id="emptyView2">
+                  <div class="slot-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span class="slot-num-badge">عکس ۲</span>
+                  <span class="slot-title">کمی به راست</span>
+                  <span class="slot-hint">لمس برای سلفی</span>
+                </div>
+                <div class="slot-filled-view" id="filledView2">
+                  <img id="thumb2" class="slot-preview-thumb" src="" alt="عکس ۲">
+                  <div class="slot-status-bar">
+                    <span class="slot-check">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      ثبت شد
+                    </span>
+                    <button type="button" class="btn-slot-retake" onclick="triggerSlot(2)">تغییر</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slot 3: Slight Left -->
+              <div class="slot-card" id="slotCard3">
+                <input type="file" id="imageInput3" name="image_3" accept="image/*" required>
+                <div class="slot-empty-view" id="emptyView3">
+                  <div class="slot-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span class="slot-num-badge">عکس ۳</span>
+                  <span class="slot-title">کمی به چپ</span>
+                  <span class="slot-hint">لمس برای سلفی</span>
+                </div>
+                <div class="slot-filled-view" id="filledView3">
+                  <img id="thumb3" class="slot-preview-thumb" src="" alt="عکس ۳">
+                  <div class="slot-status-bar">
+                    <span class="slot-check">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      ثبت شد
+                    </span>
+                    <button type="button" class="btn-slot-retake" onclick="triggerSlot(3)">تغییر</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alternative: Batch Select from Gallery -->
+            <div class="batch-bar">
+              <input type="file" id="batchInput" accept="image/*" multiple>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <span>یا انتخاب همزمان ۳ تصویر از گالری</span>
+            </div>
+          </div>
+
+          <!-- Guidelines -->
+          <div class="guidelines">
+            <div class="guidelines-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>راهنمای ۳ تصویر برای حداکثر دقت:</span>
+            </div>
+            <ul>
+              <li>عکس اول: مستقیم و نگاه به لنز دوربین با نور کافی.</li>
+              <li>عکس دوم و سوم: سر را بسیار اندک به راست و چپ متمایل کنید.</li>
+              <li>سیستم به هوش مصنوعی تشخیص هویت تکراری مجهز است و ثبت مجدد چهره‌های قبلی را مسدود می‌نماید.</li>
+            </ul>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="submitBtn" class="btn-submit">
+            <svg id="submitIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <polyline points="16 11 18 13 22 9"></polyline>
+            </svg>
+            <span id="submitSpinner" class="spinner" style="display: none;"></span>
+            <span id="submitText">ثبت‌نام و پردازش ۳ چهره</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-text">
+      سامانه یکپارچه پردازش تصویر و حضور و غیاب دانشگاهی &copy;
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMessage = document.getElementById('errorMessage');
+    const successPanel = document.getElementById('successPanel');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitIcon = document.getElementById('submitIcon');
+    const submitSpinner = document.getElementById('submitSpinner');
+    const progressPill = document.getElementById('progressPill');
+
+    const inputs = [
+      document.getElementById('imageInput1'),
+      document.getElementById('imageInput2'),
+      document.getElementById('imageInput3')
+    ];
+
+    const slotCards = [
+      document.getElementById('slotCard1'),
+      document.getElementById('slotCard2'),
+      document.getElementById('slotCard3')
+    ];
+
+    const emptyViews = [
+      document.getElementById('emptyView1'),
+      document.getElementById('emptyView2'),
+      document.getElementById('emptyView3')
+    ];
+
+    const filledViews = [
+      document.getElementById('filledView1'),
+      document.getElementById('filledView2'),
+      document.getElementById('filledView3')
+    ];
+
+    const thumbs = [
+      document.getElementById('thumb1'),
+      document.getElementById('thumb2'),
+      document.getElementById('thumb3')
+    ];
+
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorAlert.style.display = 'flex';
+      errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearError() {
+      errorAlert.style.display = 'none';
+      errorMessage.textContent = '';
+    }
+
+    function updateProgress() {
+      let count = 0;
+      for (let i = 0; i < 3; i++) {
+        if (inputs[i].files && inputs[i].files.length > 0) {
+          count++;
+        }
+      }
+      if (count === 3) {
+        progressPill.textContent = 'هر ۳ تصویر آماده است ✓';
+        progressPill.classList.add('complete');
+      } else {
+        progressPill.textContent = `${count} از ۳ تصویر آماده`;
+        progressPill.classList.remove('complete');
+      }
+    }
+
+    function handleSlotFile(index, file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showError(`فایل انتخابی در کادر ${index + 1} تصویر معتبری نیست.`);
+        return;
+      }
+      clearError();
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        thumbs[index].src = evt.target.result;
+        emptyViews[index].style.display = 'none';
+        filledViews[index].style.display = 'flex';
+        slotCards[index].classList.add('has-image');
+        updateProgress();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Attach change listeners to each slot input
+    inputs.forEach((input, idx) => {
+      input.addEventListener('change', function(e) {
+        const file = e.target.files && e.target.files[0];
+        handleSlotFile(idx, file);
+      });
+    });
+
+    function triggerSlot(num) {
+      const idx = num - 1;
+      inputs[idx].click();
+    }
+
+    // Batch input (multiple selection from gallery)
+    const batchInput = document.getElementById('batchInput');
+    batchInput.addEventListener('change', function(e) {
+      const files = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
+      if (files.length === 0) return;
+
+      clearError();
+      const count = Math.min(files.length, 3);
+      for (let i = 0; i < count; i++) {
+        const dt = new DataTransfer();
+        dt.items.add(files[i]);
+        inputs[i].files = dt.files;
+        handleSlotFile(i, files[i]);
+      }
+      if (files.length < 3) {
+        showError(`شما ${files.length} تصویر انتخاب کردید؛ لطفاً کادر(های) باقی‌مانده را تکمیل کنید.`);
+      }
+    });
+
+    function resetFormForNewStudent() {
+      form.reset();
+      for (let i = 0; i < 3; i++) {
+        inputs[i].value = '';
+        thumbs[i].src = '';
+        emptyViews[i].style.display = 'flex';
+        filledViews[i].style.display = 'none';
+        slotCards[i].classList.remove('has-image');
+      }
+      clearError();
+      updateProgress();
+      successPanel.style.display = 'none';
+      form.style.display = 'block';
+    }
+
+    // Handle AJAX Form Submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      clearError();
+
+      const fullName = document.getElementById('full_name').value.trim();
+      const studentId = document.getElementById('student_id').value.trim();
+
+      if (!fullName) {
+        showError('لطفاً نام و نام خانوادگی را وارد کنید.');
+        return;
+      }
+      if (!studentId) {
+        showError('لطفاً شماره دانشجویی را وارد کنید.');
+        return;
+      }
+
+      // Check that all 3 images are present
+      for (let i = 0; i < 3; i++) {
+        if (!inputs[i].files || inputs[i].files.length === 0) {
+          showError(`لطفاً تصویر شماره ${i + 1} را بارگذاری کنید (هر ۳ تصویر الزامی است).`);
+          return;
+        }
+      }
+
+      // Enter loading state
+      submitBtn.disabled = true;
+      submitIcon.style.display = 'none';
+      submitSpinner.style.display = 'inline-block';
+      submitText.textContent = 'در حال پردازش و ارزیابی ۳ چهره...';
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        const contentType = response.headers.get('content-type') || '';
+        let result = {};
+
+        if (contentType.includes('application/json')) {
+          result = await response.json();
+        } else {
+          const htmlText = await response.text();
+          if (response.ok) {
+            form.style.display = 'none';
+            successPanel.style.display = 'block';
+            successPanel.scrollIntoView({ behavior: 'smooth' });
+            return;
+          } else {
+            showError('خطا در پردازش تصاویر چهره. لطفاً مجدداً تلاش کنید.');
+            return;
+          }
+        }
+
+        if (response.ok && result.success) {
+          form.style.display = 'none';
+          successPanel.style.display = 'block';
+          successPanel.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          showError(result.error || 'خطایی در ثبت اطلاعات رخ داد. لطفاً دوباره تلاش کنید.');
+        }
+      } catch (err) {
+        showError('خطا در ارتباط با سرور. لطفاً اتصال شبکه را بررسی کنید.');
+      } finally {
+        submitBtn.disabled = false;
+        submitSpinner.style.display = 'none';
+        submitIcon.style.display = 'inline-block';
+        submitText.textContent = 'ثبت‌نام و پردازش ۳ چهره';
+      }
+    });
+  </script>
+</body>
+</html>
